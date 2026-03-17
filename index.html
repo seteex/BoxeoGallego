@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boxeo Galego | Resultados</title>
+    <style>
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            /* Entrada suave de toda la página */
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin-top: 60px;
+        }
+
+        header {
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .section-label::after {
+            content: "";
+            flex-grow: 1;
+            height: 1px;
+            background: #eee;
+            margin-left: 15px;
+        }
+
+        .event-item {
+            padding: 20px;
+            border: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .event-item:hover {
+            background-color: #000;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .event-item:hover .event-date, 
+        .event-item:hover small {
+            color: #888;
+        }
+
+        .event-date {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .event-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* MODAL ANIMADO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px); /* Desenfoque de fondo */
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px 0;
+        }
+
+        .modal-content {
+            width: 95%;
+            max-width: 500px;
+            margin: auto;
+            text-align: center;
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .result-card {
+            border: 2px solid #000;
+            padding: 30px 20px;
+            background: #fff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .match-row {
+            padding: 25px 0;
+            border-bottom: 1px solid #eee;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        /* Retraso en la aparición de los combates dentro del modal */
+        .match-row:nth-child(2) { animation-delay: 0.1s; }
+        .match-row:nth-child(3) { animation-delay: 0.2s; }
+        .match-row:nth-child(4) { animation-delay: 0.3s; }
+        .match-row:nth-child(5) { animation-delay: 0.4s; }
+        .match-row:nth-child(6) { animation-delay: 0.5s; }
+
+        .fighter-name { font-size: 1.1rem; font-weight: 700; display: block; }
+        .club-name { font-size: 0.75rem; color: #666; margin-bottom: 5px; display: block; }
+        .vs { font-style: italic; margin: 10px 0; color: #bbb; font-size: 0.8rem; display: block; }
+        
+        .winner-box { margin-top: 15px; }
+        .winner-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: #ff0000; font-weight: bold; }
+        .winner-name { font-size: 1.1rem; font-weight: 900; display: block; }
+        .draw-label { color: #666; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; margin-top: 10px; display: block; }
+
+        .close-btn {
+            margin: 40px 0;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            transition: letter-spacing 0.3s;
+        }
+        .close-btn:hover { letter-spacing: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Boxeo Galego</h1>
+    </header>
+
+    <main>
+        <section>
+            <div class="section-label">Veladas Anteriores</div>
+            
+            <div class="event-item" onclick="openModal()">
+                <span class="event-date">Sábado 14 de marzo</span>
+                <div class="event-name">II Club Boxeo David Burgos</div>
+                <small style="color: #bbb;">Click para ver resultados</small>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <div class="result-card">
+            <h2 style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 30px; border-bottom: 1px solid #000; padding-bottom: 10px;">RESULTADOS</h2>
+
+            <div class="match-row">
+                <span class="fighter-name">Brais Acuña</span> <span class="club-name">(David Burgos)</span>
+                <span class="vs">vs</span>
+                <span class="fighter-name">Manuel Rodriguez</span> <span class="club-name">(Team Thunder)</span>
+                <div class="winner-box">
+                    <span class="winner-label">Vencedor</span>
+                    <span class="winner-name">Brais Acuña</span> <small>A los puntos</small>
+                </div>
+            </div>
+
+            <div class="match-row">
+                <span class="fighter-name">Alonso Sambad</span> <span class="club-name">(David Burgos)</span>
+                <span class="vs">vs</span>
+                <span class="fighter-name">Martin Grandío</span> <span class="club-name">(Team Thunder)</span>
+                <div class="winner-box"><span class="draw-label">Resultado: Combate Nulo</span></div>
+            </div>
+
+            <div class="match-row">
+                <span class="fighter-name">Lucas Refojo</span> <span class="club-name">(David Burgos)</span>
+                <span class="vs">vs</span>
+                <span class="fighter-name">Alejandro Dominguez</span> <span class="club-name">(Team Thunder)</span>
+                <div class="winner-box">
+                    <span class="winner-label">Vencedor</span>
+                    <span class="winner-name">Lucas Refojo</span> <small>A los puntos</small>
+                </div>
+            </div>
+
+            <div class="match-row">
+                <span class="fighter-name">Jasmina Santos</span> <span class="club-name">(David Burgos)</span>
+                <span class="vs">vs</span>
+                <span class="fighter-name">Emma Curra</span> <span class="club-name">(Team Thunder)</span>
+                <div class="winner-box">
+                    <span class="winner-label">Vencedora</span>
+                    <span class="winner-name">Emma Curra</span> <small>A los puntos</small>
+                </div>
+            </div>
+
+            <div class="match-row">
+                <span class="fighter-name">Cristina Marquez</span> <span class="club-name">(David Burgos)</span>
+                <span class="vs">vs</span>
+                <span class="fighter-name">Lucía León</span> <span class="club-name">(Mat's Club)</span>
+                <div class="winner-box">
+                    <span class="winner-label">Vencedora</span>
+                    <span class="winner-name">Lucía León</span> <small>A los puntos</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="close-btn" onclick="closeModal()">[ CERRAR ]</div>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById("resultModal").style.display = "flex";
+    }
+    function closeModal() {
+        document.getElementById("resultModal").style.display = "none";
+    }
+    window.onclick = function(event) {
+        let modal = document.getElementById("resultModal");
+        if (event.target == modal) { closeModal(); }
+    }
+</script>
+
+</body>
+</html>
